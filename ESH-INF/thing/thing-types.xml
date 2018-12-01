@@ -8,13 +8,17 @@
         <label>WhatsApp Hub</label>
         <description>The hub to WhatsApp Messaging</description>
 
-        <channels>
-            <channel id="messageOut" typeId="messageOut" />
-            <channel id="messageIn" typeId="messageIn" />
-            <channel id="mediaIn" typeId="mediaIn" />
-        </channels>
+        <channel-groups>
+            <channel-group id="gTextMessages" typeId="gTextMessages">
+                <label>Text Messages</label>
+            </channel-group>
+            <channel-group id="gMediaMessages" typeId="gMediaMessages">
+                <label>Media Messages (JSON)</label>
+            </channel-group>
+        </channel-groups>
+          
 
-        <config-description uri="thing-type:whatsapp:config">
+        <config-description>
             <parameter name="originatingNumber" type="text" required="true" pattern="[0-9]*">
                 <label>Originating Number</label>
                 <description>Your phone number (MSISDN), which sends the message.</description>
@@ -32,8 +36,25 @@
                 <default>/usr/local/bin/yowsup-cli</default>
             </parameter>
         </config-description>
-
     </thing-type>
+
+    <channel-group-type id="gTextMessages">
+       <label>Text Message</label>
+       <description>Message uses the format: &lt;number&gt;:&lt;text&gt;</description>
+        <channels>
+            <channel id="messageOut" typeId="messageOut" />
+            <channel id="messageIn" typeId="messageIn" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="gMediaMessages">
+       <label>Media Message</label>
+       <description>Media messages will be send using the JSON format, check binding documentation for details.</description>
+        <channels>
+            <channel id="mediaOut" typeId="mediaOut" />
+            <channel id="mediaIn" typeId="mediaIn" />
+        </channels>
+    </channel-group-type>
 
     <channel-type id="messageOut">
         <item-type>String</item-type>
@@ -51,7 +72,7 @@
 
     <channel-type id="mediaIn">
         <item-type>String</item-type>
-        <label>Inbound Media URL</label>
+        <label>Inbound Media</label>
         <description>A media message (picture, audio, video), JSON format</description>
     </channel-type>
 

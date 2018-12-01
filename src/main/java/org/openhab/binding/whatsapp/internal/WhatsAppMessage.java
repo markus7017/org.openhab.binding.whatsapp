@@ -44,7 +44,8 @@ public class WhatsAppMessage {
         IMAGE,
         AUDIO,
         VIDEO,
-        VCARD
+        VCARD,
+        DOCUMENT
     }
 
     protected WhatsAppMediaType type = WhatsAppMediaType.TEXT;
@@ -61,7 +62,7 @@ public class WhatsAppMessage {
 
     }
 
-    public WhatsAppMessage(String messageString) {
+    public WhatsAppMessage(String messageString) throws WhatsAppException {
         if (message.startsWith("{", 0) && message.endsWith("}")) {
             // json format
             fromJson(messageString);
@@ -69,6 +70,8 @@ public class WhatsAppMessage {
             if (messageString.contains(":")) { // simple format: number:message
                 number = StringUtils.substringBefore(messageString, ":"); // TO-DO: validate that the string is a number
                 message = StringUtils.substringAfter(messageString, ":");
+            } else {
+                throw new WhatsAppException("Sending message without number, use notation '<number>:<message>'");
             }
         }
     }

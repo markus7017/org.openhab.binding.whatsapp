@@ -28,8 +28,6 @@ import org.apache.commons.lang.StringUtils;
  */
 
 public class WhatsAppControl {
-    private final static String CMD_VERSION = "version";
-
     private final WhatsAppLogger logger = new WhatsAppLogger(WhatsAppControl.class, "Control");
     private final WhatsAppHandler handler;
     private final WhatsAppConfiguration config;
@@ -53,25 +51,38 @@ public class WhatsAppControl {
             String errorMessage = "";
             logger.info("Originating number = '{}'", config.originatingNumber);
             if (config.apiPassword.isEmpty()) {
-                errorMessage = "API password not set, check thing configuration";
+                throw new WhatsAppException("API password not set, check thing configuration");
             }
             if (config.cliPath.isEmpty()) {
-                errorMessage = "cli-path not set, check thing configuration";
-            } else {
-                File f = new File(config.cliPath);
-                if (!f.exists() || f.isDirectory()) {
-                    // do something
-                    errorMessage = MessageFormat.format(
-                            "Configured cli-path '{0}' does not exist or is not accessable, check thing configuration",
-                            config.cliPath);
-                }
+                throw new WhatsAppException("cli-path not set, check thing configuration");
             }
-            if (!errorMessage.isEmpty()) {
+
+            File f = new File(config.cliPath);
+            if (!f.exists() || f.isDirectory()) {
+                // do something
+                throw new WhatsAppException(MessageFormat.format(
+                        "Configured cli-path '{0}' does not exist or is not accessable, check thing configuration",
+                        config.cliPath));
+            }
+            String installDir = System.getProperty("user.home") + "/.yowsup";
+            logger.debug("yowsup installation directory: {}", installDir);
+            f = new File(installDir);
+            if (!f.exists() || !f.isDirectory()) {
+                // do something
+                throw new WhatsAppException(
+                        "It seems that the yowsup data base is not initialized (/root/.yowsup was not found");
+            }
+            String keyDir = installDir + "/" + config.originatingNumber;
+            f = new File(keyDir);
+            if (!f.exists() || !f.isDirectory()) {
+                // do something
+                errorMessage = MessageFormat.format("KeyDB for this orginigating number was not found ({0}", keyDir);
                 throw new WhatsAppException(errorMessage);
+
             }
 
             // start yowsup console
-            // yowsup-cli demos -l "491711234567:XXXXXX0uB6IMp9spB9FqedKFak=" -y
+            // yowsup-cli demos -l "<originatingNumber>:<password from registration>" -y
 
             String[] args = new String[5];
             args[0] = config.cliPath;
