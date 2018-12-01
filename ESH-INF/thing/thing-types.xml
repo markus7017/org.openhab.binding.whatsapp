@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="whatsapp"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="hub">
+        <label>WhatsApp Hub</label>
+        <description>The hub to WhatsApp Messaging</description>
+
+        <channels>
+            <channel id="messageOut" typeId="messageOut" />
+            <channel id="messageIn" typeId="messageIn" />
+            <channel id="mediaIn" typeId="mediaIn" />
+        </channels>
+
+        <config-description uri="thing-type:whatsapp:config">
+            <parameter name="originatingNumber" type="text" required="true" pattern="[0-9]*">
+                <label>Originating Number</label>
+                <description>Your phone number (MSISDN), which sends the message.</description>
+                <context>telephone</context>
+            </parameter>
+
+            <parameter name="apiPassword" type="text" required="true">
+                <label>API Password</label>
+                <description>The generated password.</description>
+            </parameter>
+
+            <parameter name="cliPath" type="text" required="true">
+                <label>Path to yowsup-cli</label>
+                <description>Path to the yowsup-cli command (&lt;path&gt;\/yowsup-cli).</description>
+                <default>/usr/local/bin/yowsup-cli</default>
+            </parameter>
+        </config-description>
+
+    </thing-type>
+
+    <channel-type id="messageOut">
+        <item-type>String</item-type>
+        <label>Outbound message</label>
+        <description>Set to send a WhatsApp Message</description>
+        <category>Text</category>
+    </channel-type>
+
+    <channel-type id="messageIn">
+        <item-type>String</item-type>
+        <label>Inbound message</label>
+        <description>A text message was received.</description>
+        <category>Text</category>
+    </channel-type>
+
+    <channel-type id="mediaIn">
+        <item-type>String</item-type>
+        <label>Inbound Media URL</label>
+        <description>A media message (picture, audio, video), JSON format</description>
+    </channel-type>
+
+    <channel-type id="mediaOut">
+        <item-type>String</item-type>
+        <label>Outbound Media</label>
+        <description>A media message (picture, audio, video), JSON format</description>
+    </channel-type>
+
+</thing:thing-descriptions>
