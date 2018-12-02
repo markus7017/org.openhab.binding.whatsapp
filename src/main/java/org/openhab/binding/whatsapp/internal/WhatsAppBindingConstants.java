@@ -28,8 +28,10 @@ public class WhatsAppBindingConstants {
     public static final ThingTypeUID THING_TYPE_CHANNEL = new ThingTypeUID(BINDING_ID, "hub");
 
     // List of all Channel ids
+    public static final String CHGROUP_TEXTMESSAGE = "textMessages";
     public static final String CHANNEL_MSGOUT = "messageOut";
     public static final String CHANNEL_MSGIN = "messageIn";
+    public static final String CHGROUP_MEDIAMESSAGE = "mediaMessages";
     public static final String CHANNEL_MEDIAIN = "mediaIn";
     public static final String CHANNEL_MEDIAOUT = "mediaIn";
 }

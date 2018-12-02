@@ -50,7 +50,8 @@ public class WhatsAppHandler extends BaseThingHandler implements WhatsAppListene
             } else {
                 // command
 
-                switch (channelUID.getId()) {
+                String ch = channelUID.getId();
+                switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_MSGOUT:
                         logger.info("Send message '{}'", command.toString());
                         if (command instanceof StringType) {
@@ -130,13 +131,17 @@ public class WhatsAppHandler extends BaseThingHandler implements WhatsAppListene
         logger.info("Received Message: {}", waMessage.toString());
         switch (waMessage.type) {
             case TEXT:
-                updateState(CHANNEL_MSGIN, new StringType(waMessage.toNumberMessage())); // simple format
-                updateState(CHANNEL_MEDIAIN, new StringType(waMessage.toJson())); // JSON format
+                // simple format
+                updateState(CHGROUP_TEXTMESSAGE + "#" + CHANNEL_MSGIN, new StringType(waMessage.toNumberMessage()));
+                // JSON format
+                updateState(CHGROUP_TEXTMESSAGE + "#" + CHANNEL_MEDIAIN, new StringType(waMessage.toJson()));
                 break;
             case IMAGE:
             case VIDEO:
             case AUDIO:
-                updateState(CHANNEL_MEDIAIN, new StringType(waMessage.toJson()));
+            case DOCUMENT:
+                // JSON format
+                updateState(CHGROUP_TEXTMESSAGE + "#" + CHANNEL_MEDIAIN, new StringType(waMessage.toJson()));
                 break;
             default:
                 logger.error("Unable to handle inbound message: type '{}'", waMessage.type);

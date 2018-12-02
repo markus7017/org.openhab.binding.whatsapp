@@ -9,10 +9,10 @@
         <description>The hub to WhatsApp Messaging</description>
 
         <channel-groups>
-            <channel-group id="gTextMessages" typeId="gTextMessages">
+            <channel-group id="textMessages" typeId="textMessages">
                 <label>Text Messages</label>
             </channel-group>
-            <channel-group id="gMediaMessages" typeId="gMediaMessages">
+            <channel-group id="mediaMessages" typeId="mediaMessages">
                 <label>Media Messages (JSON)</label>
             </channel-group>
         </channel-groups>
@@ -38,7 +38,7 @@
         </config-description>
     </thing-type>
 
-    <channel-group-type id="gTextMessages">
+    <channel-group-type id="textMessages">
        <label>Text Message</label>
        <description>Message uses the format: &lt;number&gt;:&lt;text&gt;</description>
         <channels>
@@ -47,7 +47,7 @@
         </channels>
     </channel-group-type>
 
-    <channel-group-type id="gMediaMessages">
+    <channel-group-type id="mediaMessages">
        <label>Media Message</label>
        <description>Media messages will be send using the JSON format, check binding documentation for details.</description>
         <channels>

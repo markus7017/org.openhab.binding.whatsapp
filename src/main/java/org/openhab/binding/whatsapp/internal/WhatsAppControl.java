@@ -198,6 +198,7 @@ public class WhatsAppControl {
 
     void sendMessage(WhatsAppMessage waMessage) throws WhatsAppException {
         logger.info("Send message: {}", waMessage.toString());
+        // Send text message: /message send <number> <content>
         sendCommand(MessageFormat.format("/message send {0} \"{1}\"", waMessage.getNumber(), waMessage.getMessage()));
     }
 
@@ -206,19 +207,34 @@ public class WhatsAppControl {
         String caption = !waMessage.getCaption().isEmpty() ? " \"" + waMessage.getCaption() + "\"" : "";
         switch (waMessage.getType()) {
             case TEXT:
+                // Send text message:
                 sendMessage(waMessage);
                 break;
             case IMAGE:
-                sendCommand(MessageFormat.format("/image send {0} \"{1}\"{2}", waMessage.getNumber(),
+                // Send image: /image send <number> <path> [caption]
+                sendCommand(MessageFormat.format("/image send {0} \"{1}\" \"{2}\"", waMessage.getNumber(),
                         waMessage.getPath(), caption));
                 break;
             case AUDIO:
-                sendCommand(MessageFormat.format("/audio send {0} \"{1}\"{2}", waMessage.getNumber(),
+                // Send audio file: /audio send <number> <path>
+                sendCommand(MessageFormat.format("/audio send {0} \"{1}\" \"{2}\"", waMessage.getNumber(),
                         waMessage.getPath(), caption));
                 break;
             case VIDEO:
-                sendCommand(MessageFormat.format("/video send {0} \"{1}\"{2}", waMessage.getNumber(),
+                // Send video file: /video send <number> <path> [caption]
+                sendCommand(MessageFormat.format("/video send {0} \"{1}\" \"{2}\"", waMessage.getNumber(),
                         waMessage.getPath(), caption));
+                break;
+            case DOCUMENT:
+                sendCommand(
+                        MessageFormat.format("/document send {0} \"{1}\"", waMessage.getNumber(), waMessage.getPath()));
+                break;
+            case VCARD:
+                // /vcard <number> <vcardName> <contactName> <contactNumber>
+                // sendCommand(MessageFormat.format("/vcard {0} \"{1}\" \"{2}\" \"{3}\"", waMessage.getNumber(),));
+                break;
+            case LOCATION:
+                // Send location: /location <number> <latitude> <longitude> [name] [address] [url]
                 break;
         }
     }

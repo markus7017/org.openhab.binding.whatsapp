@@ -45,7 +45,8 @@ public class WhatsAppMessage {
         AUDIO,
         VIDEO,
         VCARD,
-        DOCUMENT
+        DOCUMENT,
+        LOCATION
     }
 
     protected WhatsAppMediaType type = WhatsAppMediaType.TEXT;
@@ -96,7 +97,7 @@ public class WhatsAppMessage {
     }
 
     public WhatsAppMessage fromCliString(String line) throws WhatsAppException {
-        String mediaType = StringUtils.substringBetween(line, "[Media Type:", ",");
+        String mediaType = StringUtils.substringBetween(line, "[Media Type:", "]").trim();
         if (mediaType != null) {
             // media message
             type = typeFromString(mediaType);
@@ -185,8 +186,12 @@ public class WhatsAppMessage {
                 return WhatsAppMediaType.VIDEO;
             case "AUDIO":
                 return WhatsAppMediaType.AUDIO;
+            case "DOCUMENT":
+                return WhatsAppMediaType.DOCUMENT;
             case "VCARD":
                 return WhatsAppMediaType.VCARD;
+            case "LOCATION":
+                return WhatsAppMediaType.LOCATION;
             default:
                 // logger.error("WhatsAppMessage has invalid type value: {}", type);
                 return WhatsAppMediaType.TEXT;
