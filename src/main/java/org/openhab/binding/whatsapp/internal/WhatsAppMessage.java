@@ -97,10 +97,10 @@ public class WhatsAppMessage {
     }
 
     public WhatsAppMessage fromCliString(String line) throws WhatsAppException {
-        String mediaType = StringUtils.substringBetween(line, "[Media Type:", "]").trim();
+        String mediaType = StringUtils.substringBetween(line, "[Media Type:", "]");
         if (mediaType != null) {
             // media message
-            type = typeFromString(mediaType);
+            type = typeFromString(mediaType.trim());
         } else {
             // text message
             type = WhatsAppMediaType.TEXT;
@@ -116,9 +116,12 @@ public class WhatsAppMessage {
             case IMAGE:
             case VIDEO:
             case AUDIO:
+            case DOCUMENT:
                 url = getValue(line, "URL:", "]");
                 size = getValue(line, "Size:", ",");
                 caption = getValueAfter(line, "]");
+                break;
+            case LOCATION:
                 break;
             default:
                 logger.error("Unsupported Message Type: '{}' (input='{}')", type.toString(), line);
@@ -163,15 +166,26 @@ public class WhatsAppMessage {
         JsonBuilderFactory factory = Json.createBuilderFactory(null);
         JsonObjectBuilder builder = factory.createObjectBuilder();
         JsonObject jMessage;
-        if (type == WhatsAppMediaType.TEXT) {
-            // reduced format
-            jMessage = builder.add(JKEY_TYPE, type.toString()).add(JKEY_NUMBER, number).add(JKEY_MESSAGE, message)
-                    .add(JKEY_TIMESTAMP, timestamp).add(JKEY_ID, id).build();
-        } else {
-            // full format
-            jMessage = builder.add(JKEY_TYPE, type.toString()).add(JKEY_NUMBER, number).add(JKEY_MESSAGE, message)
-                    .add(JKEY_URL, url).add(JKEY_PATH, path).add(JKEY_SIZE, size).add(JKEY_CAPTION, caption)
-                    .add(JKEY_TIMESTAMP, timestamp).add(JKEY_ID, id).build();
+        switch (type) {
+            case TEXT:
+                // reduced format
+                jMessage = builder.add(JKEY_TYPE, type.toString()).add(JKEY_NUMBER, number).add(JKEY_MESSAGE, message)
+                        .add(JKEY_TIMESTAMP, timestamp).add(JKEY_ID, id).build();
+                break;
+            case IMAGE:
+            case AUDIO:
+            case VIDEO:
+            case DOCUMENT:
+                // full format
+                jMessage = builder.add(JKEY_TYPE, type.toString()).add(JKEY_NUMBER, number).add(JKEY_MESSAGE, message)
+                        .add(JKEY_URL, url).add(JKEY_PATH, path).add(JKEY_SIZE, size).add(JKEY_CAPTION, caption)
+                        .add(JKEY_TIMESTAMP, timestamp).add(JKEY_ID, id).build();
+                break;
+            default:
+                logger.error("toJson(): unsupoported message type '{}'", type);
+            case LOCATION:
+                jMessage = builder.add(JKEY_TIMESTAMP, timestamp).add(JKEY_ID, id).build();
+                break;
         }
         return jMessage.toString();
     }

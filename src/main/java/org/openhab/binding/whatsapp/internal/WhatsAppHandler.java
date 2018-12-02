@@ -134,14 +134,15 @@ public class WhatsAppHandler extends BaseThingHandler implements WhatsAppListene
                 // simple format
                 updateState(CHGROUP_TEXTMESSAGE + "#" + CHANNEL_MSGIN, new StringType(waMessage.toNumberMessage()));
                 // JSON format
-                updateState(CHGROUP_TEXTMESSAGE + "#" + CHANNEL_MEDIAIN, new StringType(waMessage.toJson()));
+                updateState(CHGROUP_MEDIAMESSAGE + "#" + CHANNEL_MEDIAIN, new StringType(waMessage.toJson()));
                 break;
             case IMAGE:
             case VIDEO:
             case AUDIO:
             case DOCUMENT:
+            case LOCATION:
                 // JSON format
-                updateState(CHGROUP_TEXTMESSAGE + "#" + CHANNEL_MEDIAIN, new StringType(waMessage.toJson()));
+                updateState(CHGROUP_MEDIAMESSAGE + "#" + CHANNEL_MEDIAIN, new StringType(waMessage.toJson()));
                 break;
             default:
                 logger.error("Unable to handle inbound message: type '{}'", waMessage.type);
