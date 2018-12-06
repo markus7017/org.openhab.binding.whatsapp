@@ -212,20 +212,24 @@ public class WhatsAppControl {
                 break;
             case IMAGE:
                 // Send image: /image send <number> <path> [caption]
+                checkFile(waMessage.getPath());
                 sendCommand(MessageFormat.format("/image send {0} \"{1}\" \"{2}\"", waMessage.getNumber(),
                         waMessage.getPath(), caption));
                 break;
             case AUDIO:
                 // Send audio file: /audio send <number> <path>
+                checkFile(waMessage.getPath());
                 sendCommand(MessageFormat.format("/audio send {0} \"{1}\" \"{2}\"", waMessage.getNumber(),
                         waMessage.getPath(), caption));
                 break;
             case VIDEO:
                 // Send video file: /video send <number> <path> [caption]
+                checkFile(waMessage.getPath());
                 sendCommand(MessageFormat.format("/video send {0} \"{1}\" \"{2}\"", waMessage.getNumber(),
                         waMessage.getPath(), caption));
                 break;
             case DOCUMENT:
+                checkFile(waMessage.getPath());
                 sendCommand(
                         MessageFormat.format("/document send {0} \"{1}\"", waMessage.getNumber(), waMessage.getPath()));
                 break;
@@ -268,6 +272,15 @@ public class WhatsAppControl {
         try {
             stop();
         } catch (IOException e) {
+        }
+    }
+
+    private void checkFile(String fileName) throws WhatsAppException {
+        File f = new File(fileName);
+        if (!f.exists() || f.isDirectory()) {
+            // do something
+            throw new WhatsAppException(
+                    MessageFormat.format("File '{0}' does not exist or is not accessable", fileName));
         }
     }
 }
