@@ -1,4 +1,5 @@
 # WhatsApp Binding
+<hr><b>Release: alpha2</b><hr><p>
 
 This binding provides access to the WhatsApp messaging service. Initially it will provide full support of text messages. Media files (image / video / audio) will be likely supported, but need more work.
 
