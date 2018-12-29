@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.whatsapp.internal;
+package org.openhab.binding.whatsapp.handler;
 
 import static org.openhab.binding.whatsapp.internal.WhatsAppBindingConstants.*;
 
@@ -22,6 +22,11 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.whatsapp.internal.WhatsAppConfiguration;
+import org.openhab.binding.whatsapp.internal.WhatsAppLogger;
+import org.openhab.binding.whatsapp.internal.control.WhatsAppControl;
+import org.openhab.binding.whatsapp.internal.control.WhatsAppListener;
+import org.openhab.binding.whatsapp.internal.control.WhatsAppMessage;
 
 /**
  * The {@link WhatsAppHandler} is responsible for handling commands, which are
@@ -50,18 +55,19 @@ public class WhatsAppHandler extends BaseThingHandler implements WhatsAppListene
             } else {
                 // command
 
-                String ch = channelUID.getId();
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_MSGOUT:
                         logger.info("Send message '{}'", command.toString());
                         if (command instanceof StringType) {
-                            control.sendMessage(new WhatsAppMessage(command.toString()));
+                            control.sendMessage(new WhatsAppMessage(command.toString(), config.defaultCC));
                         }
                         break;
                     case CHANNEL_MEDIAOUT:
-                        logger.info("Send message '{}'", command.toString());
+                        logger.info("Send media message, JSON='{}'", command.toString());
                         if (command instanceof StringType) {
-                            control.sendMedia(new WhatsAppMessage(command.toString()));
+                            WhatsAppMessage waMessage = new WhatsAppMessage();
+                            waMessage.fromJson(command.toString(), config.defaultCC);
+                            control.sendMedia(waMessage);
                         }
                         break;
                     default:
@@ -97,7 +103,7 @@ public class WhatsAppHandler extends BaseThingHandler implements WhatsAppListene
                     control.start();
                     logger.debug("Hub initialized.");
                 } catch (Exception e) {
-                    startError = MessageFormat.format("exception: {0} ({1})", e.getMessage(), e.getClass());
+                    startError = MessageFormat.format("{0} ({1})", e.getMessage(), e.getClass());
                     updateThingState(ThingStatus.OFFLINE, "Initialization failed: " + startError);
                 }
             });
@@ -129,7 +135,7 @@ public class WhatsAppHandler extends BaseThingHandler implements WhatsAppListene
     @Override
     public void onInboundMessage(WhatsAppMessage waMessage) {
         logger.info("Received Message: {}", waMessage.toString());
-        switch (waMessage.type) {
+        switch (waMessage.getType()) {
             case TEXT:
                 // simple format
                 updateState(CHGROUP_TEXTMESSAGE + "#" + CHANNEL_MSGIN, new StringType(waMessage.toNumberMessage()));
@@ -145,7 +151,7 @@ public class WhatsAppHandler extends BaseThingHandler implements WhatsAppListene
                 updateState(CHGROUP_MEDIAMESSAGE + "#" + CHANNEL_MEDIAIN, new StringType(waMessage.toJson()));
                 break;
             default:
-                logger.error("Unable to handle inbound message: type '{}'", waMessage.type);
+                logger.error("Unable to handle inbound message: type '{}'", waMessage.getType());
         }
     }
 
@@ -184,7 +190,7 @@ public class WhatsAppHandler extends BaseThingHandler implements WhatsAppListene
             if ((newStatus == ThingStatus.ONLINE) || errorMessage.isEmpty()) {
                 updateStatus(newStatus);
             } else {
-                logger.error("Error: {}, switch Thing offline", errorMessage);
+                logger.error("{}, switch Thing offline", errorMessage);
                 updateStatus(newStatus, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             }
         }

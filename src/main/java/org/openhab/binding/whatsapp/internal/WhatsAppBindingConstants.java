@@ -33,5 +33,5 @@ public class WhatsAppBindingConstants {
     public static final String CHANNEL_MSGIN = "messageIn";
     public static final String CHGROUP_MEDIAMESSAGE = "mediaMessages";
     public static final String CHANNEL_MEDIAIN = "mediaIn";
-    public static final String CHANNEL_MEDIAOUT = "mediaIn";
+    public static final String CHANNEL_MEDIAOUT = "mediaOut";
 }

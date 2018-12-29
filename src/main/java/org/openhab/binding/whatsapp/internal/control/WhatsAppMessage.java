@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.whatsapp.internal;
+package org.openhab.binding.whatsapp.internal.control;
 
 import java.io.StringReader;
 import java.text.MessageFormat;
@@ -20,6 +20,8 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 
 import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.whatsapp.internal.WhatsAppException;
+import org.openhab.binding.whatsapp.internal.WhatsAppLogger;
 
 /**
  * The {@link WhatsAppMessage} class encapsulates the message data and attributes.
@@ -49,6 +51,8 @@ public class WhatsAppMessage {
         LOCATION
     }
 
+    private String defaultCC = "";
+
     protected WhatsAppMediaType type = WhatsAppMediaType.TEXT;
     protected String number = "";
     protected String timestamp = "";
@@ -63,13 +67,15 @@ public class WhatsAppMessage {
 
     }
 
-    public WhatsAppMessage(String messageString) throws WhatsAppException {
-        if (message.startsWith("{", 0) && message.endsWith("}")) {
+    public WhatsAppMessage(String messageString, String defaultCC) throws WhatsAppException {
+        this.defaultCC = defaultCC;
+        if (messageString.startsWith("{") && message.endsWith("}")) {
             // json format
-            fromJson(messageString);
+            fromJson(messageString, defaultCC);
         } else {
             if (messageString.contains(":")) { // simple format: number:message
-                number = StringUtils.substringBefore(messageString, ":"); // TO-DO: validate that the string is a number
+                setNumber(StringUtils.substringBefore(messageString, ":")); // TO-DO: validate that the string is a
+                                                                            // number
                 message = StringUtils.substringAfter(messageString, ":");
             } else {
                 throw new WhatsAppException("Sending message without number, use notation '<number>:<message>'");
@@ -77,17 +83,20 @@ public class WhatsAppMessage {
         }
     }
 
-    public WhatsAppMessage(WhatsAppMediaType type, String number, String message, String timestamp, String id) {
+    public WhatsAppMessage(WhatsAppMediaType type, String number, String defaultCC, String message, String timestamp,
+            String id) {
         this.type = type;
-        this.number = number;
+        this.defaultCC = defaultCC;
+        setNumber(number);
         this.timestamp = timestamp;
         this.id = id;
     }
 
-    public WhatsAppMessage(WhatsAppMediaType type, String number, String url, String caption, String path, String size,
-            String timestamp, String id) {
+    public WhatsAppMessage(WhatsAppMediaType type, String number, String defaultCC, String url, String caption,
+            String path, String size, String timestamp, String id) {
         this.type = type;
-        this.number = number;
+        this.defaultCC = defaultCC;
+        setNumber(number);
         this.url = url;
         this.caption = caption;
         this.path = path;
@@ -145,12 +154,13 @@ public class WhatsAppMessage {
         return number + ":" + message;
     }
 
-    public JsonObject fromJson(String jsonString) {
+    public JsonObject fromJson(String jsonString, String defaultCC) {
         JsonReader reader = Json.createReader(new StringReader(jsonString));
         JsonObject jMessage = reader.readObject();
 
         type = typeFromString(getJString(jMessage, JKEY_TYPE, ""));
-        number = getJString(jMessage, JKEY_NUMBER, "");
+        this.defaultCC = defaultCC;
+        setNumber(getJString(jMessage, JKEY_NUMBER, ""));
         timestamp = getJString(jMessage, JKEY_TIMESTAMP, "");
         message = getJString(jMessage, JKEY_MESSAGE, "");
         url = getJString(jMessage, JKEY_URL, "");
@@ -209,6 +219,25 @@ public class WhatsAppMessage {
             default:
                 // logger.error("WhatsAppMessage has invalid type value: {}", type);
                 return WhatsAppMediaType.TEXT;
+        }
+    }
+
+    public void setDefaultCC(String cc) {
+        defaultCC = cc;
+    }
+
+    public void setNumber(String number) {
+        if (number.startsWith("+")) {
+            // omit leading '+'
+            this.number = StringUtils.substringAfter(number, "+");
+        } else if (number.startsWith("00")) {
+            // omit leading '00'
+            this.number = StringUtils.substringAfter(number, "00");
+        } else if (number.startsWith("0") && !defaultCC.isEmpty()) {
+            // convert national to international format
+            this.number = defaultCC + StringUtils.substringAfter(number, "0");
+        } else {
+            this.number = number;
         }
     }
 

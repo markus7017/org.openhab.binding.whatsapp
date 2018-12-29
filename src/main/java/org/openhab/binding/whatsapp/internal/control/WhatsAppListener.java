@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.whatsapp.internal;
+package org.openhab.binding.whatsapp.internal.control;
 
 /**
  * The {@link WhatsAppListener} class defines the interface to pass console events to the thing handler

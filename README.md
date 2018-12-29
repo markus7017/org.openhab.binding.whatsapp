@@ -16,6 +16,7 @@ You need a mobile number, which is not yet registered with WhatsApp, e.g. a prep
 
 <b>If you use the yowsup-cli command for registration of a new number, you run the risk of being black-listed by WhatsApp after sending your first message.<p> 
 To avoid this,<br></b>
+
 - insert a new SIM<br>
 - install WhatsApp on the mobile device<br>
 - Start conversations with several numbers in your address book<br> 
@@ -184,7 +185,7 @@ A WhatsApp thing could be added using PaperUI. Change to Configuration-&gt;Thing
 
 Select the WhatsApp binding and continue, then the WhatsApp Hub and continue.<p>
 
-Enter the originating number of the SIM card, which was registered. Do not enter the leading '0' and use international format:<b>
+Enter the originating number of the SIM card, which was registered. Do not enter the leading '0' and use international format:<br>
 e.g. 01711234567 is a number in Germany, then replace the loading '0' with '49' = 491711234567<p>
 
 The API password is the one you generated during yowsup installation.<p>
@@ -200,6 +201,21 @@ _Note that it is planned to generate some part of this based on the XML files wi
 ## Full Example
 
 _Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+
+
+## Sending and Receiving Messages
+
+The binding supports 2 types of messages<p>
+Simple text<br>
+Send a message: You need to create an item, which is linked to the "Text Messages->Outbound message" channel. <br>
+Use sendCommand(Item, Message) from an openHAB rule and use the following notation: <number>:<message><o>
+Inbound messages are posted to the "Text Messages->Inbound message" channel in the same format.<p>
+
+Send media messages:<br> 
+The binding uses a JSON format to send/receive non-text media messages, e.g.<br>
+{ "type" : "image", "number" : "491711234567", "path" : "/home/markus7017/Downloads/image.png", "caption" : "Hello from openHAB" }<br>
+sends an image. Please make sure to incude the fully qualified path.
+<p>
 
 
 ## Trouble Shooting

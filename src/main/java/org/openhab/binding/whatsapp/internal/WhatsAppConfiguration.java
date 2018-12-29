@@ -17,10 +17,9 @@ package org.openhab.binding.whatsapp.internal;
  */
 public class WhatsAppConfiguration {
 
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
     public String originatingNumber = "";
+    public String defaultCC = "";
     public String apiPassword = "";
     public String cliPath = "/usr/local/bin/yowsup-cli";
+    public String dbPath = "";
 }

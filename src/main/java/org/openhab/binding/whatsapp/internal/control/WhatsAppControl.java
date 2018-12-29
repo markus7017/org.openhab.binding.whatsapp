@@ -8,10 +8,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.whatsapp.internal;
+package org.openhab.binding.whatsapp.internal.control;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -20,6 +21,10 @@ import java.text.MessageFormat;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.whatsapp.handler.WhatsAppHandler;
+import org.openhab.binding.whatsapp.internal.WhatsAppConfiguration;
+import org.openhab.binding.whatsapp.internal.WhatsAppException;
+import org.openhab.binding.whatsapp.internal.WhatsAppLogger;
 
 /**
  * The {@link WhatsAppControl} class provides functions to control the yowsup instance running as a sub process
@@ -46,7 +51,7 @@ public class WhatsAppControl {
         this.handler = handler;
     }
 
-    void start() throws IOException, WhatsAppException {
+    public void start() throws IOException, WhatsAppException {
         try {
             String errorMessage = "";
             logger.info("Originating number = '{}'", config.originatingNumber);
@@ -59,31 +64,33 @@ public class WhatsAppControl {
 
             File f = new File(config.cliPath);
             if (!f.exists() || f.isDirectory()) {
-                // do something
                 throw new WhatsAppException(MessageFormat.format(
                         "Configured cli-path '{0}' does not exist or is not accessable, check thing configuration",
                         config.cliPath));
             }
-            String installDir = System.getProperty("user.home") + "/.yowsup";
-            logger.debug("yowsup installation directory: {}", installDir);
-            f = new File(installDir);
-            if (!f.exists() || !f.isDirectory()) {
-                // do something
-                throw new WhatsAppException(
-                        "It seems that the yowsup data base is not initialized (/root/.yowsup was not found");
-            }
-            String keyDir = installDir + "/" + config.originatingNumber;
-            f = new File(keyDir);
-            if (!f.exists() || !f.isDirectory()) {
-                // do something
-                errorMessage = MessageFormat.format("KeyDB for this orginigating number was not found ({0}", keyDir);
-                throw new WhatsAppException(errorMessage);
-
+            logger.debug("config.dbPath={}, user.name={}, user.home={}", config.dbPath, System.getProperty("user.name"),
+                    System.getProperty("user.home"));
+            if (!System.getProperty("user.name").equals("root") && !System.getProperty("user.name").equals("openhab")) {
+                // doesn't work when running as service
+                String dbPath = !config.dbPath.isEmpty() ? config.dbPath : System.getProperty("user.home") + "/.yowsup";
+                logger.debug("yowsup installation directory: {}", dbPath);
+                f = new File(dbPath);
+                if (!f.exists() || !f.isDirectory()) {
+                    errorMessage = MessageFormat.format("yowsup database is not initialized, {0} was not found!",
+                            dbPath);
+                    throw new WhatsAppException(errorMessage, new FileNotFoundException());
+                }
+                String keyDir = dbPath + "/" + config.originatingNumber;
+                f = new File(keyDir);
+                if (!f.exists() || !f.isDirectory()) {
+                    errorMessage = MessageFormat.format("KeyDB for orginigating number {0} was not found in {1}",
+                            config.originatingNumber, keyDir);
+                    throw new WhatsAppException(errorMessage, new FileNotFoundException());
+                }
             }
 
             // start yowsup console
             // yowsup-cli demos -l "<originatingNumber>:<password from registration>" -y
-
             String[] args = new String[5];
             args[0] = config.cliPath;
             args[1] = "demos";
@@ -191,20 +198,27 @@ public class WhatsAppControl {
         }
     }
 
-    void login() throws WhatsAppException {
+    public void login() throws WhatsAppException {
         logger.info("Logging in to WhatsApp service.");
         sendCommand("/L");
     }
 
-    void sendMessage(WhatsAppMessage waMessage) throws WhatsAppException {
+    public void sendMessage(WhatsAppMessage waMessage) throws WhatsAppException {
         logger.info("Send message: {}", waMessage.toString());
         // Send text message: /message send <number> <content>
         sendCommand(MessageFormat.format("/message send {0} \"{1}\"", waMessage.getNumber(), waMessage.getMessage()));
     }
 
-    void sendMedia(WhatsAppMessage waMessage) throws WhatsAppException {
+    public void sendMedia(WhatsAppMessage waMessage) throws WhatsAppException {
         logger.info("Send media: {}", waMessage.toString());
         String caption = !waMessage.getCaption().isEmpty() ? " \"" + waMessage.getCaption() + "\"" : "";
+        if (!waMessage.getPath().isEmpty()) {
+            File f = new File(waMessage.getPath());
+            if (!f.exists()) {
+                logger.error("WARNING: File '{}' does not exist!");
+            }
+
+        }
         switch (waMessage.getType()) {
             case TEXT:
                 // Send text message:
@@ -212,17 +226,17 @@ public class WhatsAppControl {
                 break;
             case IMAGE:
                 // Send image: /image send <number> <path> [caption]
-                sendCommand(MessageFormat.format("/image send {0} \"{1}\" \"{2}\"", waMessage.getNumber(),
+                sendCommand(MessageFormat.format("/image send {0} \"{1}\" {2}", waMessage.getNumber(),
                         waMessage.getPath(), caption));
                 break;
             case AUDIO:
                 // Send audio file: /audio send <number> <path>
-                sendCommand(MessageFormat.format("/audio send {0} \"{1}\" \"{2}\"", waMessage.getNumber(),
+                sendCommand(MessageFormat.format("/audio send {0} \"{1}\" {2}", waMessage.getNumber(),
                         waMessage.getPath(), caption));
                 break;
             case VIDEO:
                 // Send video file: /video send <number> <path> [caption]
-                sendCommand(MessageFormat.format("/video send {0} \"{1}\" \"{2}\"", waMessage.getNumber(),
+                sendCommand(MessageFormat.format("/video send {0} \"{1}\" {2}", waMessage.getNumber(),
                         waMessage.getPath(), caption));
                 break;
             case DOCUMENT:
@@ -239,12 +253,13 @@ public class WhatsAppControl {
         }
     }
 
-    void disconnect() throws WhatsAppException {
+    public void disconnect() throws WhatsAppException {
         logger.info("Disconnecting from WhatsApp service.");
         sendCommand("/disconnect");
     }
 
     private void sendCommand(String command) throws WhatsAppException {
+        logger.debug("Send CLI command '{}'", command);
         try {
             synchronized (output) {
                 output.write(command + "\r\n");
@@ -256,7 +271,7 @@ public class WhatsAppControl {
 
     }
 
-    void stop() throws IOException {
+    public void stop() throws IOException {
         logger.info("Stopping Console");
         yowsupProcess.destroy();
         if (yowsupProcess.isAlive()) {
