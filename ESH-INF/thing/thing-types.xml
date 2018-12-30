@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="whatsapp"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="hub">
+        <label>WhatsApp Hub</label>
+        <description>The hub to WhatsApp Messaging</description>
+
+        <channel-groups>
+            <channel-group id="textMessages" typeId="textMessages">
+                <label>Text Messages</label>
+            </channel-group>
+            <channel-group id="mediaMessages" typeId="mediaMessages">
+                <label>Media Messages (JSON)</label>
+            </channel-group>
+        </channel-groups>
+          
+
+        <config-description>
+            <parameter-group name="accountInformation">
+                <label>Account Information</label>
+            </parameter-group>
+            <parameter-group name="advanced">
+                <label>Advanced Options</label>
+            </parameter-group>
+
+            <parameter name="originatingNumber" type="text" required="true" pattern="[0-9]*" groupName="accountInformation">
+                <label>Originating Number</label>
+                <description>Your phone number (MSISDN), which sends the message.</description>
+                <context>telephone</context>
+            </parameter>
+
+            <parameter name="apiPassword" type="text" required="true" groupName="accountInformation">
+                <label>API Password</label>
+                <description>The generated password.</description>
+            </parameter>
+
+            <parameter name="defaultCC" type="text" required="false" pattern="[0-9]*" groupName="accountInformation">
+                <label>Default Country Code</label>
+                <description>Default Country Code, e.g. 49 for Germany</description>
+                <context>telephone</context>
+            </parameter>
+
+            <parameter name="cliPath" type="text" required="true"  groupName="advanced">
+                <label>Path to yowsup-cli</label>
+                <description>Path to the yowsup-cli command (&lt;path&gt;\/yowsup-cli).</description>
+                <default>/usr/local/bin/yowsup-cli</default>
+            </parameter>
+
+            <parameter name="dbPath" type="text" required="false" groupName="advanced">
+                <label>Path to yowsup key db</label>
+                <description>Path to the yowsup keydb command (usually /root/.yowsup).</description>
+                <default></default>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <channel-group-type id="textMessages">
+       <label>Text Message</label>
+       <description>Message uses the format: &lt;number&gt;:&lt;text&gt;</description>
+        <channels>
+            <channel id="messageOut" typeId="messageOut" />
+            <channel id="messageIn" typeId="messageIn" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="mediaMessages">
+       <label>Media Message</label>
+       <description>Media messages will be send using the JSON format, check binding documentation for details.</description>
+        <channels>
+            <channel id="mediaOut" typeId="mediaOut" />
+            <channel id="mediaIn" typeId="mediaIn" />
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="messageOut">
+        <item-type>String</item-type>
+        <label>Outbound message</label>
+        <description>Set to send a WhatsApp Message</description>
+        <category>Text</category>
+    </channel-type>
+
+    <channel-type id="messageIn">
+        <item-type>String</item-type>
+        <label>Inbound message</label>
+        <description>A text message was received.</description>
+        <category>Text</category>
+    </channel-type>
+
+    <channel-type id="mediaIn">
+        <item-type>String</item-type>
+        <label>Inbound Media</label>
+        <description>A media message (picture, audio, video), JSON format</description>
+    </channel-type>
+
+    <channel-type id="mediaOut">
+        <item-type>String</item-type>
+        <label>Outbound Media</label>
+        <description>A media message (picture, audio, video), JSON format</description>
+    </channel-type>
+
+</thing:thing-descriptions>
