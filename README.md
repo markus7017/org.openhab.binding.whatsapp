@@ -1,6 +1,6 @@
 # WhatsApp Binding
 
-<hr><b>Release: beta1</b><hr><p>
+<hr><b>Release: 2.4.1pre</b><hr><p>
 
 This binding provides access to the WhatsApp messaging service. Initially it will provide full support of text messages. Media files (image / video / audio) will be likely supported, but need more work.
 
