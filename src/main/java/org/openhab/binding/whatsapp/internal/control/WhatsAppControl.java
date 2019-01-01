@@ -125,7 +125,7 @@ public class WhatsAppControl {
                                 if (line.length() == 0) {
                                     continue;
                                 }
-                                logger.info("Console: '{}'", line);
+                                logger.debug("Console: '{}'", line);
 
                                 // yowsup-cli v2.0.15
                                 // Using yowsup v2.5.7
