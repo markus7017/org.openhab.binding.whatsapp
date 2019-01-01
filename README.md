@@ -1,5 +1,6 @@
 # WhatsApp Binding
-<hr><b>Release: alpha2</b><hr><p>
+
+<hr><b>Release: 2.4.1pre</b><hr><p>
 
 This binding provides access to the WhatsApp messaging service. Initially it will provide full support of text messages. Media files (image / video / audio) will be likely supported, but need more work.
 
@@ -207,6 +208,7 @@ _Provide a full usage example based on textual configuration files (*.things, *.
 ## Sending and Receiving Messages
 
 ### Number format
+
 WhatsApp requires the number in international format. The binding normalizes the given number to allow different formats. You need to set the default country code in the binding config if you want to use 0xxx (being transformed to CCxxxx).
 examples:
 +491711234567 -> 491711234567
@@ -214,11 +216,13 @@ examples:
 01711234567 -> 491711234567
 
 ### Text messages
+
 Send a message: You need to create an item, which is linked to the "Text Messages->Outbound message" channel. <br>
 Use sendCommand(Item, Message) from an openHAB rule and use the following notation: <number>:<message><o>
 Inbound messages are posted to the "Text Messages->Inbound message" channel in the same format.<p>
 
 ### Media Messages 
+
 The binding uses a JSON format to send/receive non-text media messages, e.g.<br>
 { "type" : "image", "number" : "491711234567", "path" : "/home/markus7017/Downloads/image.png", "caption" : "Hello from openHAB" }<br>
 sends an image. Please make sure to incude the fully qualified path.
