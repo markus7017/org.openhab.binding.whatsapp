@@ -76,7 +76,6 @@ The thing has a few configuration parameters:<p>
 
 ## Channels
 
-
 <table>
 <tr><td>Thing</td><td>Description</td></tr>
 <tr><td>Group textMessages</td><td></td></tr>
@@ -88,15 +87,39 @@ The thing has a few configuration parameters:<p>
 </table>
 <p>
 See "Sending and Receiving Messages" for more information.
+<p>
 
 ## Full Example
 
 <b>whatsapp.things:</b><p>
 
-Thing whatsapp:hub:whatsapp1 "WhatsApp Hub" @ "network" [ originatingNumber="491711234567", apiPassword="2X83AzXZLLkjHw3/faNBL1mudfZ=", defaultCC="49", ... ]<p>
+Thing whatsapp:hub:whatsapp1 "WhatsApp Hub" [ originatingNumber="491711234567", apiPassword="2X83AzXZLLkjHw3/faNBL1mudfZ=", defaultCC="49", ... ]<p>
 
-<b>Sitemap:</b>
+<b>whatsapp.items</b><p>
 
+String WhatsApp_TextOut "WhatsApp Text  Out [%s]"  {channel="whatsapp:hub:whatsapp1:textMessages#messageOut"}<br>
+String WhatsApp_TextIn  "WhatsApp Text  In [%s]"   {channel="whatsapp:hub:whatsapp1:textMessages#messageIn"}<br>
+String WhatsApp_TextOut "WhatsApp Media Out [%s]"  {channel="whatsapp:hub:whatsapp1:mediaMessages#mediaOut"}<br>
+String WhatsApp_TextOut "WhatsApp Media In [%s]"   {channel="whatsapp:hub:whatsapp1:mediaMessages#mediaIn"}<br>
+
+<b>Sitemap:</b><p>
+t.b.d.<p>
+
+<b>whatsapp.rules</b><p>
+rule "alarm"
+when
+    Alarm changed to ON
+then
+    WhatsApp_TextOut.sendCommand("491717654321:An alarm has been detected!")
+end
+
+while "whatsapp-in"
+when
+    Item WhatsApp_TextIn changed
+then
+    logInfo("Bot", "A WhatsApp message has been received:"+WhatsApp_TextIn.state)
+end
+<0p>
 
 ## Sending and Receiving Messages
 
@@ -111,8 +134,10 @@ examples:
 </table>
 <p>
 <b>Text messages</b><p>
-Send a message: You need to create an item, which is linked to the "Text Messages->Outbound message" channel. <br>
-Use sendCommand(Item, Message) from an openHAB rule and use the following notation: <number>:<message><o>
+Send a message: You need to create an item, which is linked to the "Text Messages->Outbound message" channel.<p>
+
+Use item.sendCommand(message) from an openHAB rule and use the following notation: &lt;number&gt;:&lt;message&gt;<p>
+
 Inbound messages are posted to the "Text Messages->Inbound message" channel in the same format.<p>
 
 <b>Media Messages</b><p> 
