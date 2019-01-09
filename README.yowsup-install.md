@@ -9,8 +9,9 @@ Please note: yowsup requires several Python libs, which might not be installed o
 #### Install required packages
 
 Preperation on Linux<br>
-sudo apt-get update<nt>
-sudo apt-get install libncurses5-dev<br>
+login as root and run:<br>
+apt-get update<nt>
+apt-get install libncurses5-dev  libmagickwand-dev<br>
 <p>
 Preperation on Mac (needs [Homwbrew](https://www.howtogeek.com/211541/homebrew-for-os-x-easily-installs-desktop-apps-and-terminal-utilities/))<br>
 brew install wget --with-libressl<br>
