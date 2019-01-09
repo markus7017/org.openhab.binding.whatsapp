@@ -40,7 +40,8 @@ pip3 install --upgrade pillow<p>
 
 
 Download https://files.pythonhosted.org/packages/ce/17/9eeb6bc3a7cc1dc8ba7db35a2038c61bef49336ec21057258801e9aef2a5/preview_generator-0.9.tar.gz<br>
-unzip preview_generator-0.9.tar.gz<br>
+gunzip preview_generator-0.9.tar.gz<br>
+tar xfv preview_generator-0.9.tar<br>
 phyton3 ./setup.py install<p>
 
 ### Install yowsup fork 
