@@ -22,7 +22,7 @@ cd /usr/local/lib/<br>
 ln -s ../Cellar/libmagic/5.35/lib/libmagic.dylib libmagic.dylib<br>
 <p>
 
-Install Python modules:<br>
+Install Python modules (plase make sure to use Python 3!):<br>
 pip3 install --upgrade pip<br>
 pip3 install argparse<br>
 pip3 install python-dateutil<br>
