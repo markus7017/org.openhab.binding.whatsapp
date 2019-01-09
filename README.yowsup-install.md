@@ -33,7 +33,8 @@ pip3 install urllib3<br>
 pip3 install idna<br>
 pip3 install chardet<br>
 pip3 install certifi<br>
-pip3 install cryptographypip3 install pycrypto<br>
+pip3 install cryptography
+pip3 install pycrypto<br>
 pip3 install python-axolotl-curve25519<br>
 pip3 install --upgrade pillow<p>
 
