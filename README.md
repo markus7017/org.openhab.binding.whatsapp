@@ -1,6 +1,8 @@
 # WhatsApp Binding
 
-<hr><b>Release: 2.4.1pre</b><hr><p>
+<hr><b>Release: 2.4.1pre - archived!
+The binding is archived, because WhatsApp shutdown the underlying API mid of 01/2018. If athe yowsup projects finds a way to work around that this binding could be re-activated<br>
+Thanks for supporting this work.<br><p>
 
 This binding provides access to the WhatsApp messaging service. Sending and receiving text messages are supported as well as sending images. Other media formats need to be supported by the underlying WhatsApp interface before they could be integrated.
 
