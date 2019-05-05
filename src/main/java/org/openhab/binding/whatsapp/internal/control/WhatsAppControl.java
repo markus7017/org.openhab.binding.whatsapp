@@ -70,22 +70,26 @@ public class WhatsAppControl {
             }
             logger.debug("config.dbPath={}, user.name={}, user.home={}", config.dbPath, System.getProperty("user.name"),
                     System.getProperty("user.home"));
-            if (!System.getProperty("user.name").equals("root") && !System.getProperty("user.name").equals("openhab")) {
-                // doesn't work when running as service
-                String dbPath = !config.dbPath.isEmpty() ? config.dbPath : System.getProperty("user.home") + "/.yowsup";
-                logger.debug("yowsup installation directory: {}", dbPath);
-                f = new File(dbPath);
-                if (!f.exists() || !f.isDirectory()) {
-                    errorMessage = MessageFormat.format("yowsup database is not initialized, {0} was not found!",
-                            dbPath);
-                    throw new WhatsAppException(errorMessage, new FileNotFoundException());
-                }
-                String keyDir = dbPath + "/" + config.originatingNumber;
-                f = new File(keyDir);
-                if (!f.exists() || !f.isDirectory()) {
-                    errorMessage = MessageFormat.format("KeyDB for orginigating number {0} was not found in {1}",
-                            config.originatingNumber, keyDir);
-                    throw new WhatsAppException(errorMessage, new FileNotFoundException());
+            if (false) {
+                if (!System.getProperty("user.name").equals("root")
+                        && !System.getProperty("user.name").equals("openhab")) {
+                    // doesn't work when running as service
+                    String dbPath = !config.dbPath.isEmpty() ? config.dbPath
+                            : System.getProperty("user.home") + "/.yowsup";
+                    logger.debug("yowsup installation directory: {}", dbPath);
+                    f = new File(dbPath);
+                    if (!f.exists() || !f.isDirectory()) {
+                        errorMessage = MessageFormat.format("yowsup database is not initialized, {0} was not found!",
+                                dbPath);
+                        throw new WhatsAppException(errorMessage, new FileNotFoundException());
+                    }
+                    String keyDir = dbPath + "/" + config.originatingNumber;
+                    f = new File(keyDir);
+                    if (!f.exists() || !f.isDirectory()) {
+                        errorMessage = MessageFormat.format("KeyDB for orginigating number {0} was not found in {1}",
+                                config.originatingNumber, keyDir);
+                        throw new WhatsAppException(errorMessage, new FileNotFoundException());
+                    }
                 }
             }
 
@@ -94,8 +98,8 @@ public class WhatsAppControl {
             String[] args = new String[5];
             args[0] = config.cliPath;
             args[1] = "demos";
-            args[2] = "-l";
-            args[3] = config.originatingNumber + ":" + config.apiPassword;
+            args[2] = "--config-phone";
+            args[3] = config.originatingNumber;
             args[4] = "-y";
 
             logger.debug("Start console: {} {} {} {} {}", args[0], args[1], args[2], args[3], args[4]);

@@ -46,9 +46,9 @@ public class WhatsAppHandler extends BaseThingHandler implements WhatsAppListene
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                control.login();
-            }
+            // if (getThing().getStatus() != ThingStatus.ONLINE) {
+            // control.login();
+            // }
 
             if (command instanceof RefreshType) {
                 // TODO: handle data refresh
@@ -94,7 +94,7 @@ public class WhatsAppHandler extends BaseThingHandler implements WhatsAppListene
             // we set this upfront to reliably check status updates in unit tests.
             updateStatus(ThingStatus.UNKNOWN);
 
-            // Example for background initialization:
+            // Schedule background initialization:
             scheduler.execute(() -> {
                 String startError = "";
                 try {
