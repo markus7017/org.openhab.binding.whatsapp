@@ -1,5 +1,4 @@
-
-# yowsup installation for openHAB WhatsApp binding #
+# openHAB WhatsApp binding - yowsup installation
 
 This doc provides some help on how to install yowsup. This is an open source project which integrates the in-official WhatsApp api as a Python library and provides a command line interface, which will be used by the WhatsApp binding to send and receive WhatsApp messages within the openHAB environment.
 
