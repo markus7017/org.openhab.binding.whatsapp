@@ -19,7 +19,6 @@ public class WhatsAppConfiguration {
 
     public String originatingNumber = "";
     public String defaultCC = "";
-    public String apiPassword = "";
     public String cliPath = "/usr/local/bin/yowsup-cli";
     public String dbPath = "";
 }

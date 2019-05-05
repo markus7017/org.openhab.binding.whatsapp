@@ -32,11 +32,6 @@
                 <context>telephone</context>
             </parameter>
 
-            <parameter name="apiPassword" type="text" required="true" groupName="accountInformation">
-                <label>API Password</label>
-                <description>The generated password.</description>
-            </parameter>
-
             <parameter name="defaultCC" type="text" required="false" pattern="[0-9]*" groupName="accountInformation">
                 <label>Default Country Code</label>
                 <description>Default Country Code, e.g. 49 for Germany</description>

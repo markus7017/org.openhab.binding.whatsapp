@@ -55,9 +55,6 @@ public class WhatsAppControl {
         try {
             String errorMessage = "";
             logger.info("Originating number = '{}'", config.originatingNumber);
-            if (config.apiPassword.isEmpty()) {
-                throw new WhatsAppException("API password not set, check thing configuration");
-            }
             if (config.cliPath.isEmpty()) {
                 throw new WhatsAppException("cli-path not set, check thing configuration");
             }
@@ -94,7 +91,7 @@ public class WhatsAppControl {
             }
 
             // start yowsup console
-            // yowsup-cli demos -l "<originatingNumber>:<password from registration>" -y
+            // yowsup-cli demos --config-phone <originatingNumber> -y
             String[] args = new String[5];
             args[0] = config.cliPath;
             args[1] = "demos";
