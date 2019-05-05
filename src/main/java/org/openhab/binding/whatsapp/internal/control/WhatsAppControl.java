@@ -92,15 +92,16 @@ public class WhatsAppControl {
 
             // start yowsup console
             // yowsup-cli demos --config-phone <originatingNumber> -y
-            String[] args = new String[5];
+            String[] args = new String[10];
             args[0] = config.cliPath;
             args[1] = "demos";
             args[2] = "--config-phone";
             args[3] = config.originatingNumber;
-            args[4] = "-y";
+            args[4] = "--debug";
+            args[5] = "-y";
 
-            logger.debug("Start console: {} {} {} {} {}", args[0], args[1], args[2], args[3], args[4]);
-            ProcessBuilder pb = new ProcessBuilder(args[0], args[1], args[2], args[3], args[4]);
+            logger.debug("Start console: {} {} {} {} {} {}", args[0], args[1], args[2], args[3], args[4], args[5]);
+            ProcessBuilder pb = new ProcessBuilder(args[0], args[1], args[2], args[3], args[4], args[5]);
             pb.redirectErrorStream(true);
             pb.redirectInput(Redirect.PIPE);
             pb.redirectOutput(Redirect.PIPE);
